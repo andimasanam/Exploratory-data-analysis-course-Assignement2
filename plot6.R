@@ -1,40 +1,35 @@
-# Exploratory Data Analysis - Assignment 2 - Q. #6
+## Question 6
  
-
-# Load ggplot2 library
+## Libraries needed: 
+library(plyr)
 library(ggplot2)
+library(grid)
 
+## read in the data
 NEI <- readRDS("summarySCC_PM25.rds")
 SCC <- readRDS("Source_Classification_Code.rds")
 
-NEI$year <- factor(NEI$year, levels=c('1999', '2002', '2005', '2008'))
+## check the levels for types of vehicles defined
+motorvehicle.sourced <- unique(grep("Vehicles", SCC$EI.Sector, ignore.case = TRUE, value = TRUE))
+motorvehicle.sourcec <- SCC[SCC$EI.Sector %in% motorvehicle.sourced, ]["SCC"]
 
-# Baltimore City, Maryland
-# Los Angeles County, California
-MD.onroad <- subset(NEI, fips == '24510' & type == 'ON-ROAD')
-CA.onroad <- subset(NEI, fips == '06037' & type == 'ON-ROAD')
 
-# Aggregate
-MD.DF <- aggregate(MD.onroad[, 'Emissions'], by=list(MD.onroad$year), sum)
-colnames(MD.DF) <- c('year', 'Emissions')
-MD.DF$City <- paste(rep('MD', 4))
+## subset our data Baltimore City
+emissionMotorVehicle.baltimore <- NEI[NEI$SCC %in% motorvehicle.sourcec$SCC & NEI$fips == "24510", ]
+## Step 3B: subset our data Los Angeles County
+emissionMotorVehicle.LA <- NEI[NEI$SCC %in% motorvehicle.sourcec$SCC & NEI$fips == "06037", ]
 
-CA.DF <- aggregate(CA.onroad[, 'Emissions'], by=list(CA.onroad$year), sum)
-colnames(CA.DF) <- c('year', 'Emissions')
-CA.DF$City <- paste(rep('CA', 4))
+## Step 3C: bind the data created
+emissionMotorVehicle.comb <- rbind(emissionMotorVehicle.baltimore, emissionMotorVehicle.LA)
+  
+## Find the emmissions due to motor vehicles in 
+## Baltimore (city) and Los Angeles County
+tmveYR.county <- aggregate (Emissions ~ fips * year, data =emissionMotorVehicle.comb, FUN = sum ) 
+tmveYR.county$county <- ifelse(tmveYR.county$fips == "06037", "Los Angeles", "Baltimore")
 
-DF <- as.data.frame(rbind(MD.DF, CA.DF))
-
-# Compare emissions from motor vehicle sources in Baltimore City with emissions from motor vehicle sources 
-# in Los Angeles County, California (fips == 06037). Which city has seen greater changes over time 
-# in motor vehicle emissions?
-
-# Generate the graph in the same directory as the source code
-png('plot6.png')
-
-ggplot(data=DF, aes(x=year, y=Emissions)) + geom_bar(aes(fill=year)) + guides(fill=F) + 
-    ggtitle('Total Emissions of Motor Vehicle Sources\nLos Angeles County, California vs. Baltimore City, Maryland') + 
-    ylab(expression('PM'[2.5])) + xlab('Year') + theme(legend.position='none') + facet_grid(. ~ City) + 
-    geom_text(aes(label=round(Emissions,0), size=1, hjust=0.5, vjust=-1))
-
+## Step 5: plotting to png
+png("plot6.png", width=750)
+qplot(year, Emissions, data=tmveYR.county, geom="line", color=county) + 
+ggtitle(expression("Motor Vehicle Emission Levels" ~ PM[2.5] ~ "  from 1999 to 2008 in Los Angeles County, CA and Baltimore, MD")) +
+xlab("Year") + ylab(expression("Levels of" ~ PM[2.5] ~ " Emissions"))
 dev.off()
