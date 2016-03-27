@@ -4,8 +4,8 @@
 require(ggplot2)
 
 # Loading provided datasets - loading from local machine
-NEI <- readRDS("~/Exploratory_Data_Analysis/Assignment_2/summarySCC_PM25.rds")
-SCC <- readRDS("~/Exploratory_Data_Analysis/Assignment_2/Source_Classification_Code.rds")
+NEI <- readRDS("summarySCC_PM25.rds")
+SCC <- readRDS("Source_Classification_Code.rds")
 
 # Coal combustion related sources
 SCC.coal = SCC[grepl("coal", SCC$Short.Name, ignore.case=TRUE),]
@@ -19,7 +19,7 @@ colnames(merge.sum) <- c('Year', 'Emissions')
 # changed from 1999-2008?
 
 # Generate the graph in the same directory as the source code
-png(filename='~/Exploratory_Data_Analysis/Assignment_2/plot4.png')
+png(filename='plot4.png')
 
 ggplot(data=merge.sum, aes(x=Year, y=Emissions/1000)) + 
     geom_line(aes(group=1, col=Emissions)) + geom_point(aes(size=2, col=Emissions)) + 
