@@ -35,8 +35,8 @@ colnames(coalcomb.pm25year)[3] <- "Emissions"
 png("plot4.png")
 
 qplot(year, Emissions, data=coalcomb.pm25year, color=type, geom="line") + 
-stat_summary(fun.y = "sum", fun.ymin = "sum", fun.ymax = "sum", color = "purple", aes(shape="total"), geom="line") +
-geom_line(aes(size="total", shape = NA)) + ggtitle(expression("Coal Combustion" ~ PM[2.5] ~ "Emissions by Source Type and Year")) + 
+stat_summary(fun.y = "sum", fun.ymin = "sum", fun.ymax = "sum", color = "blue", aes(shape="total"), geom="line") +
+geom_line(aes(size="total", shape = NA)) + ggtitle(expression("Coal Combustion" ~ PM[2.5] ~ "Emissions by Type and Year")) + 
 xlab("Year") + ylab(expression("Total" ~ PM[2.5] ~ "Emissions (tons)"))
 
 dev.off()
