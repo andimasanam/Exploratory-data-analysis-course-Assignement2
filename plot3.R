@@ -5,8 +5,8 @@
 require(ggplot2)
 
 # Loading provided datasets - loading from local machine
-NEI <- readRDS("~/Exploratory_Data_Analysis/Assignment_2/summarySCC_PM25.rds")
-SCC <- readRDS("~/Exploratory_Data_Analysis/Assignment_2/Source_Classification_Code.rds")
+NEI <- readRDS("summarySCC_PM25.rds")
+SCC <- readRDS("Source_Classification_Code.rds")
 
 # Sampling
 NEI_sampling <- NEI[sample(nrow(NEI), size=5000, replace=F), ]
@@ -21,7 +21,7 @@ MD$year <- factor(MD$year, levels=c('1999', '2002', '2005', '2008'))
 # Use the ggplot2 plotting system to make a plot answer this question.
 
 # Generate the graph in the same directory as the source code
-png(filename='~/Exploratory_Data_Analysis/Assignment_2/plot3.png', width=800, height=500, units='px')
+png(filename='plot3.png', width=800, height=500, units='px')
 
 ggplot(data=MD, aes(x=year, y=log(Emissions))) + facet_grid(. ~ type) + guides(fill=F) +
     geom_boxplot(aes(fill=type)) + stat_boxplot(geom ='errorbar') +
